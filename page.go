@@ -1,19 +1,18 @@
 package page
 
 import (
-	"os"
-	"io"
-	"time"
 	"bytes"
+	"io"
+	_ "log"
+	"path/filepath"
 	"text/template"
-	"log"
+	"time"
 )
 
 type Page struct {
-	pageName string
-	templateName string
-
+	body     *template.Template
 	template *template.Template
+
 	Head        []string
 	Scripts     []string
 	Stylesheets []string
@@ -24,30 +23,64 @@ type Page struct {
 	Now         time.Time
 }
 
-func NewPage(templateName string) (p *Page) {
+func NewPage() (p *Page) {
 	p = new(Page)
 	p.Now = time.Now()
-	p.templateName = templateName
 	return
 }
 
-func (p *Page) Execute(w io.Writer) {
-	var err error
-	p.template, err = template.ParseFiles("template/" + p.templateName)
-	if err == nil {
-		p.template.Execute(w, p)
-	}else{
-		log.Fatal(err)
-	}
+func (p *Page) LoadTemplate(templateFile string) (err error) {
+	p.template, err = template.ParseFiles(filepath.Join("template", templateFile))
+	return
 }
 
-func (p *Page) FromFile(slug string) (*Page) {
-	body, _ := template.ParseFiles("page/" + slug)
-	var b bytes.Buffer
-	body.Execute(&b, p)
-	p.Body = b.String()
-	return p
+func (p *Page) LoadBody(bodyFile string) (err error) {
+	p.body, err = template.ParseFiles(filepath.Join("page", bodyFile))
+	return
 }
+
+func (p *Page) Execute(w io.Writer) (err error) {
+
+	if p.template != nil && p.body == nil {
+		err = p.template.Execute(w, p)
+		return
+	}
+
+	if p.template == nil && p.body != nil {
+		err = p.body.Execute(w, p)
+		return
+	}
+
+	if p.template != nil && p.body != nil {
+		var b bytes.Buffer
+		err = p.body.Execute(&b, p)
+		if err != nil {
+			return
+		}
+		p.Body = b.String()
+		err = p.template.Execute(w, p)
+		return
+	}
+
+	return
+}
+
+func (p *Page) SetTitle(title string) (s string) {
+	p.Title = title
+	return
+}
+
+func (p *Page) AddJS(path string) (s string) {
+	p.Scripts = append(p.Scripts, path)
+	return
+}
+
+func (p *Page) UseTemplate(path string) (s string) {
+	p.LoadTemplate(path)
+	return
+}
+
+/*
 
 func Exists(slug string) bool {
 	fh, err := os.Open("page/" + slug)
@@ -67,3 +100,4 @@ func TemplateExists(slug string) bool {
 	return false
 }
 
+*/
