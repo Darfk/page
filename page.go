@@ -3,7 +3,6 @@ package page
 import (
 	"bytes"
 	"io"
-	_ "log"
 	"path/filepath"
 	"text/template"
 	"time"
@@ -79,25 +78,3 @@ func (p *Page) UseTemplate(path string) (s string) {
 	p.LoadTemplate(path)
 	return
 }
-
-/*
-
-func Exists(slug string) bool {
-	fh, err := os.Open("page/" + slug)
-	defer fh.Close()
-	if err == nil {
-		return true
-	}
-	return false
-}
-
-func TemplateExists(slug string) bool {
-	fh, err := os.Open("template/" + slug)
-	defer fh.Close()
-	if err == nil {
-		return true
-	}
-	return false
-}
-
-*/

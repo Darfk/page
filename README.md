@@ -1,23 +1,11 @@
-## Synopsis
+## Page
 
-A tiny html page renderer 
+Tiny page rendering framework
 
-## Code Example
+## Usage
 
-See other repo: https://bitbucket.org/Darfk/mux
-
-## Motivation
-
-I needed a framework for displaying HTML pages in golang.
+See https://github.com/Darfk/pagehandler/blob/master/pagehandler.go
 
 ## Installation
 
-`go get github.com/darfk/mux`
-
-## Tests
-
-*No tests*
-
-## License
-
-MIT
+`go get github.com/darfk/page`
